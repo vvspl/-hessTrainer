@@ -595,6 +595,7 @@ var Chess = function (fen) {
           add_move(board, moves, i, square, BITS.NORMAL);
 
           /* double square */
+          // eslint-disable-next-line
           var square = i + PAWN_OFFSETS[us][1];
           if (second_rank[us] === rank(i) && board[square] == null) {
             add_move(board, moves, i, square, BITS.BIG_PAWN);
@@ -602,7 +603,9 @@ var Chess = function (fen) {
         }
 
         /* pawn captures */
+        // eslint-disable-next-line
         for (j = 2; j < 4; j++) {
+          // eslint-disable-next-line
           var square = i + PAWN_OFFSETS[us][j];
           if (square & 0x88) continue;
 
@@ -615,9 +618,11 @@ var Chess = function (fen) {
       } else {
         for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
           var offset = PIECE_OFFSETS[piece.type][j];
+          // eslint-disable-next-line
           var square = i;
 
           while (true) {
+            // eslint-disable-next-line
             square += offset;
             if (square & 0x88) break;
 
@@ -657,8 +662,11 @@ var Chess = function (fen) {
       }
 
       /* queen-side castling */
+      // eslint-disable-next-line
       if (castling[us] & BITS.QSIDE_CASTLE) {
+        // eslint-disable-next-line
         var castling_from = kings[us];
+        // eslint-disable-next-line
         var castling_to = castling_from - 2;
 
         if (
@@ -683,7 +691,7 @@ var Chess = function (fen) {
 
     /* filter out illegal moves */
     var legal_moves = [];
-    for (var i = 0, len = moves.length; i < len; i++) {
+    for (let i = 0, len = moves.length; i < len; i++) {
       make_move(moves[i]);
       if (!king_attacked(us)) {
         legal_moves.push(moves[i]);
@@ -846,7 +854,7 @@ var Chess = function (fen) {
       /* kb vs. kb where any number of bishops are all on the same color */
       var sum = 0;
       var len = bishops.length;
-      for (var i = 0; i < len; i++) {
+      for (let i = 0; i < len; i++) {
         sum += bishops[i];
       }
       if (sum === 0 || sum === len) {
@@ -933,12 +941,16 @@ var Chess = function (fen) {
 
       /* if we castled, move the rook next to the king */
       if (move.flags & BITS.KSIDE_CASTLE) {
+        // eslint-disable-next-line
         var castling_to = move.to - 1;
+        // eslint-disable-next-line
         var castling_from = move.to + 1;
         board[castling_to] = board[castling_from];
         board[castling_from] = null;
       } else if (move.flags & BITS.QSIDE_CASTLE) {
+        // eslint-disable-next-line
         var castling_to = move.to + 1;
+        // eslint-disable-next-line
         var castling_from = move.to - 2;
         board[castling_to] = board[castling_from];
         board[castling_from] = null;
@@ -960,7 +972,7 @@ var Chess = function (fen) {
 
     /* turn off castling if we capture a rook */
     if (castling[them]) {
-      for (var i = 0, len = ROOKS[them].length; i < len; i++) {
+      for (let i = 0, len = ROOKS[them].length; i < len; i++) {
         if (move.to === ROOKS[them][i].square && castling[them] & ROOKS[them][i].flag) {
           castling[them] ^= ROOKS[them][i].flag;
           break;
@@ -1459,7 +1471,7 @@ var Chess = function (fen) {
 
       /* wrap the PGN output at max_width */
       var current_width = 0;
-      for (var i = 0; i < moves.length; i++) {
+      for (let i = 0; i < moves.length; i++) {
         /* if the current move will push past max_width */
         if (current_width + moves[i].length > max_width && i !== 0) {
           /* don't end the line with whitespace */

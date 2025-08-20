@@ -48,6 +48,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      flipped: false, // Изменено: начальное состояние flipped
       boardIndex: 0,
       newGameDiaOpen: false,
       intelligenceDiaOpen: false,
@@ -57,6 +58,11 @@ class App extends Component {
         : '10',
     };
   }
+
+  handleToggleFlip = () => {
+    this.setState({ flipped: !this.state.flipped });
+  };
+
   requestCloseNewGame = () => {
     this.setState({ newGameDiaOpen: false });
   };
@@ -106,6 +112,7 @@ class App extends Component {
   };
   handlePlayForHuman = () => {
     if (sf == null) {
+      // eslint-disable-next-line
       sf = eval('stockfish');
     }
     sf.postMessage(`position fen ${this.state.historicalStates[this.state.boardIndex]}`);
@@ -167,11 +174,20 @@ class App extends Component {
               resized(windowSize.windowWidth, windowSize.windowHeight);
             }}
           />
-          <ChessBoard
-            onMove={this.handleChessMove}
-            intelligenceLevel={this.state.intelligenceLevel}
-            board={this.state.historicalStates[this.state.boardIndex]}
-          />
+          <div className="chess-wrapper">
+            <FlatButton
+              label="Перевернуть доску"
+              primary={true}
+              style={{ color: '#333' }}
+              onClick={this.handleToggleFlip}
+            />
+            <ChessBoard
+              onMove={this.handleChessMove}
+              intelligenceLevel={this.state.intelligenceLevel}
+              board={this.state.historicalStates[this.state.boardIndex]}
+              flipped={this.state.flipped}
+            />
+          </div>
           <Dialog
             title="New Game"
             actions={newGameActions}

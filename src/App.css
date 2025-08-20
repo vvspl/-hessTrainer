@@ -200,3 +200,39 @@
 .ai-suggestion-to {
   outline: 3px solid green; /* клетка, куда ходить */
 }
+
+.chess-board-container {
+  transform: rotate(180deg); /* Переворачиваем всю доску на 180 градусов */
+  display: inline-block; /* Убедимся, что контейнер не растягивается */
+}
+
+.chess-board-container .cell {
+  transform: rotate(
+    -180deg
+  ); /* Поворачиваем ячейки обратно, чтобы фигуры были в правильной ориентации */
+  display: inline-block; /* Убедимся, что ячейки правильно выравниваются */
+}
+
+.chess-board-container.flipped {
+  transform: rotate(180deg);
+  display: inline-block;
+}
+
+.chess-board-container.flipped .cell {
+  transform: rotate(-180deg);
+  display: inline-block;
+}
+
+.chess-board-container:not(.flipped) {
+  transform: rotate(0deg);
+  display: inline-block;
+}
+
+.chess-board-container:not(.flipped) .cell {
+  transform: rotate(0deg);
+  display: inline-block;
+}
+
+.chess-wrapper {
+  text-align: center; /* Центрирует содержимое (кнопку и доску) */
+}

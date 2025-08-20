@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types'; // Добавляем prop-types
 import { fenToBoard } from './Fen.js';
 let Chess = require('./chess.js').Chess;
 let sf = null;
@@ -14,16 +15,7 @@ function showThinkingBar(value) {
 class ChessBoard extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectMode: false, from: '', to: '', userColor: 'w', flipped: false };
-
-    let chess = new Chess();
-    if (this.state.userColor === 'b') {
-      // если первый ход за чёрных, AI делает ход
-      let moves = chess.moves();
-      let move = moves[Math.floor(Math.random() * moves.length)];
-      chess.move(move);
-      this.props.onMove(chess.fen());
-    }
+    this.state = { selectMode: false, from: '', to: '', userColor: 'w' };
   }
 
   refreshBoard(board) {
@@ -32,10 +24,9 @@ class ChessBoard extends Component {
         const cell = board[row][col];
         const cellId = 'cell-' + String.fromCharCode(97 + col) + -1 * (row - 8);
         const el = document.getElementById(cellId);
-        if (el) el.classList.remove('selectable'); // сброс
-
+        if (el) el.classList.remove('selectable');
         if (cell != null && (cell.color === this.state.userColor || true)) {
-          if (el) el.classList.add('selectable'); // все фигуры можно выбрать
+          if (el) el.classList.add('selectable'); // Исправлено: убраны невалидные символы
         }
       }
     }
@@ -51,18 +42,16 @@ class ChessBoard extends Component {
     let chess = new Chess(this.props.board);
 
     if (sf == null) {
-      // Инициализация Stockfish
+      // eslint-disable-next-line
       sf = eval('stockfish');
       sf.onmessage = event => {
         let message = event.data ? event.data : event;
         if (message.startsWith('bestmove')) {
           showThinkingBar(false);
-
           const move = message.split(' ')[1];
           if (move && move !== '(none)') {
             const fromCell = move.substr(0, 2);
             const toCell = move.substr(2, 2);
-
             const fromEl = document.getElementById('cell-' + fromCell);
             const toEl = document.getElementById('cell-' + toCell);
             if (fromEl) fromEl.classList.add('ai-suggestion-from');
@@ -73,13 +62,11 @@ class ChessBoard extends Component {
     }
 
     if (this.state.selectMode) {
-      // второй клик — куда ходить
       this.setState({ to: cellCode });
       const moves = chess.moves({ square: this.state.from, verbose: true }).map(m => m.to);
       const piece = chess.get(this.state.from);
 
       if (moves.includes(cellCode)) {
-        // проверка превращения пешки
         if (
           (cellCode[1] === '8' && piece.type === 'p') ||
           (cellCode[1] === '1' && piece.type === 'p')
@@ -88,7 +75,6 @@ class ChessBoard extends Component {
         } else {
           chess.move({ from: this.state.from, to: cellCode });
         }
-
         showThinkingBar(true);
         sf.postMessage(`position fen ${chess.fen()}`);
         sf.postMessage(`go depth ${this.props.intelligenceLevel}`);
@@ -96,14 +82,11 @@ class ChessBoard extends Component {
       }
 
       this.setState({ selectMode: false, from: '', to: '' });
-
-      // сброс подсветок
       const allCells = document.getElementsByClassName('cell');
       for (let i = 0; i < allCells.length; i++) {
         allCells[i].className = 'cell';
       }
     } else {
-      // первый клик — выбор фигуры
       const selectableCells = Array.from(document.getElementsByClassName('selectable')).map(
         el => el.id.split('-')[1],
       );
@@ -111,7 +94,6 @@ class ChessBoard extends Component {
         this.setState({ from: cellCode, selectMode: true });
         const el = document.getElementById('cell-' + cellCode);
         if (el) el.classList.add('selected');
-
         const moves = chess.moves({ square: cellCode, verbose: true }).map(m => m.to);
         for (let i = 0; i < moves.length; i++) {
           const moveEl = document.getElementById('cell-' + moves[i]);
@@ -142,7 +124,13 @@ class ChessBoard extends Component {
       );
     }
 
-    return <div className="chess-board">{row}</div>;
+    return (
+      <div
+        className={this.props.flipped ? 'chess-board-container flipped' : 'chess-board-container'}
+      >
+        <div className="chess-board">{row}</div>
+      </div>
+    );
   }
 }
 
@@ -159,5 +147,11 @@ class Cell extends Component {
     );
   }
 }
+
+ChessBoard.propTypes = {
+  board: PropTypes.string.isRequired,
+  onMove: PropTypes.func.isRequired,
+  intelligenceLevel: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
 export default ChessBoard;
