@@ -191,3 +191,11 @@
 .cell:nth-child(even) {
   background-color: #b58863; /* тёмная клетка */
 }
+
+.ai-suggestion-from {
+  outline: 3px solid blue; /* клетка, откуда ходить */
+}
+
+.ai-suggestion-to {
+  outline: 3px solid green; /* клетка, куда ходить */
+}
