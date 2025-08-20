@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { fenToBoard } from './Fen.js';
-var Chess = require('./chess.js').Chess;
+let Chess = require('./chess.js').Chess;
 let sf = null;
 
 function showThinkingBar(value) {
@@ -14,21 +14,21 @@ function showThinkingBar(value) {
 class ChessBoard extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectMode: false, from: '', to: '', userColor: 'w' };
+    this.state = { selectMode: false, from: '', to: '', userColor: 'w', flipped: false };
 
-    var chess = new Chess();
+    let chess = new Chess();
     if (this.state.userColor === 'b') {
       // если первый ход за чёрных, AI делает ход
-      var moves = chess.moves();
-      var move = moves[Math.floor(Math.random() * moves.length)];
+      let moves = chess.moves();
+      let move = moves[Math.floor(Math.random() * moves.length)];
       chess.move(move);
       this.props.onMove(chess.fen());
     }
   }
 
   refreshBoard(board) {
-    for (var row = 0; row < board.length; row++) {
-      for (var col = 0; col < board[row].length; col++) {
+    for (let row = 0; row < board.length; row++) {
+      for (let col = 0; col < board[row].length; col++) {
         const cell = board[row][col];
         const cellId = 'cell-' + String.fromCharCode(97 + col) + -1 * (row - 8);
         const el = document.getElementById(cellId);
@@ -42,13 +42,13 @@ class ChessBoard extends Component {
   }
 
   componentDidMount() {
-    var chess = new Chess(this.props.board);
+    let chess = new Chess(this.props.board);
     this.refreshBoard(chess.board());
     this.forceUpdate();
   }
 
   nextState(cellCode) {
-    var chess = new Chess(this.props.board);
+    let chess = new Chess(this.props.board);
 
     if (sf == null) {
       // Инициализация Stockfish
@@ -99,7 +99,7 @@ class ChessBoard extends Component {
 
       // сброс подсветок
       const allCells = document.getElementsByClassName('cell');
-      for (var i = 0; i < allCells.length; i++) {
+      for (let i = 0; i < allCells.length; i++) {
         allCells[i].className = 'cell';
       }
     } else {
@@ -113,7 +113,7 @@ class ChessBoard extends Component {
         if (el) el.classList.add('selected');
 
         const moves = chess.moves({ square: cellCode, verbose: true }).map(m => m.to);
-        for (var i = 0; i < moves.length; i++) {
+        for (let i = 0; i < moves.length; i++) {
           const moveEl = document.getElementById('cell-' + moves[i]);
           if (moveEl) moveEl.classList.add('legalnext');
         }
@@ -127,7 +127,7 @@ class ChessBoard extends Component {
     const boardArray = fenToBoard(this.props.board);
     const row = [];
 
-    for (var i = 0; i < boardArray.length; i++) {
+    for (let i = 0; i < boardArray.length; i++) {
       if (i % 8 === 0 && i !== 0) {
         row.push(<p className="seperator" key={'sep-' + i} />);
       }

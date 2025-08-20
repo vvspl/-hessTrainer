@@ -64,6 +64,7 @@
 .legalnext {
   background: gold !important;
   cursor: pointer;
+  opacity: 0.5;
 }
 
 #root > div > div:nth-child(1) > div:nth-child(1) > h1 {
